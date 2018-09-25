@@ -9,8 +9,8 @@
 
 #include "utils.hpp"
 
-namespace cppy3 {
 
+namespace cppy3 {
 
 PythonVM::PythonVM(const std::string& programName) {
 
@@ -95,6 +95,26 @@ Var exec(const char* pythonScript) {
   return result;
 }
 
+LIB_API Var eval(const char* pythonScript) {
+  GILLocker lock;
+  PyObject* mainDict = getMainDict();
+  Var result;
+
+  result.newRef(PyRun_String(pythonScript, Py_eval_input, mainDict, mainDict));
+  if (result.data() == NULL) {
+    const PyExceptionData excData = getErrorObject(false);
+    if (excData.type == L"<class 'SyntaxError'>") {
+      // eval() throws SyntaxError when called with expressions
+      // use exec() for expressions
+      getErrorObject(true);
+      return exec(pythonScript);
+    } else {
+      rethrowPythonException();
+    }
+  }
+  return result;
+}
+
 Var exec(const std::string& pythonScript) {
   return exec(pythonScript.data());
 }
@@ -108,7 +128,6 @@ Var exec(const std::wstring& pythonScript) {
   return exec(WideToUTF8(script).c_str());
 }
 
-
 Var execScriptFile(const std::wstring& path) {
   std::ifstream t("file.txt");
 
@@ -121,12 +140,10 @@ Var execScriptFile(const std::wstring& path) {
   return exec(script.c_str());
 }
 
-
 bool error() {
   GILLocker lock;
   return Py_IsInitialized() && PyErr_Occurred();
 }
-
 
 void rethrowPythonException() {
   if (error()) {
@@ -255,16 +272,16 @@ void extract(PyObject* o, double& value) {
   if (PyFloat_Check(o)) {
     value = PyFloat_AsDouble(o);
   } else {
-    throw PythonException(L"variable is not a real");
+    throw PythonException(L"variable is not a real type");
   }
 }
 
 
-void extract(PyObject* o, int& value) {
+void extract(PyObject* o, long& value) {
   if (PyLong_Check(o)) {
     value = PyLong_AsLong(o);
   } else {
-    throw PythonException(L"variable is not an int");
+    throw PythonException(L"variable is not a long type");
   }
 }
 
@@ -289,6 +306,20 @@ std::wstring Var::toString(PyObject* val) {
     result << "< type='" << val->ob_type->tp_name << L"' has no string representation >";
   }
   return result.str();
+}
+
+
+long Var::toLong() const {
+  long value = 0;
+  extract(_o, value);
+  return value;
+}
+
+
+double Var::toDouble() const {
+  long value = 0;
+  extract(_o, value);
+  return value;
 }
 
 

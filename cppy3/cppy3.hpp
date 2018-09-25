@@ -45,6 +45,7 @@ class Main;
 LIB_API Var exec(const char* pythonScript);
 LIB_API Var exec(const std::wstring& pythonScript);
 LIB_API Var exec(const std::string& pythonScript);
+LIB_API Var eval(const char* pythonScript);
 
 /** exec python script file */
 LIB_API Var execScriptFile(const std::wstring& path);
@@ -132,14 +133,16 @@ struct PyExceptionData {
 class PythonException : public std::exception
 {
 public:
-  PythonException(const PyExceptionData& info_) : info(info_) {}
-  PythonException(const std::wstring& reason) : info(reason) {}
+  PythonException(const PyExceptionData& info_) : info(info_), _what(WideToUTF8(info.toString())) {}
+  PythonException(const std::wstring& reason) : info(reason), _what(WideToUTF8(info.toString())) {}
   ~PythonException() throw() {}
 
   const char* what() const throw() {
-    return WideToUTF8(info.toString()).c_str();
+    return _what.c_str();
   }
   const PyExceptionData info;
+private:
+  const std::string _what;
 };
 
 
@@ -188,7 +191,7 @@ PyObject* varCreator(const Matrix<T>& value) {
 #endif
 
 LIB_API void extract(PyObject* o, std::wstring& value);
-LIB_API void extract(PyObject* o, int& value);
+LIB_API void extract(PyObject* o, long& value);
 LIB_API void extract(PyObject* o, double& value);
 
 template<typename T>
@@ -478,6 +481,12 @@ public:
   static std::wstring toString(PyObject* val);
   std::wstring toString() const;
   std::string toUTF8String() const {return WideToUTF8(toString());}
+  
+  /**
+   * Get cast to scalar POD types
+   */
+  long toLong() const;
+  double toDouble() const;
 
   /**
    * Get type

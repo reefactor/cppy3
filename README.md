@@ -1,11 +1,10 @@
 # cppy3
-================
 
 ## Embed Python 3 into your C++ app in 10 minutes
 
 ### Minimalistic library for embedding CPython 3.x scripting language into C++ application
 
-No additional dependencies required. Linux, Windows platforms supported.
+No additional dependencies. Linux, Windows platforms supported.
 
 ### Features
 

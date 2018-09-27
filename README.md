@@ -15,7 +15,7 @@ No additional dependencies required. Linux, Windows platforms supported.
 * Manage GIL with scoped lock/unlock guards
 * Translate/forward exceptions from Python to to C++ layer
 * Nice C++ abstractions for Python native types list, dict and numpy.ndarray
-* (TODO) Support Numpy ndarray interface with tiny C++ wrappers
+* Support Numpy ndarray via tiny C++ wrappers
 
 ### Dependencies
 

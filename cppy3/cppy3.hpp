@@ -16,10 +16,6 @@
  */
 #pragma once
 
-// python (undefs surpress warnings from python.h)
-#undef _POSIX_C_SOURCE
-#undef _XOPEN_SOURCE
-
 #include <Python.h>
 
 // std

@@ -4,7 +4,7 @@
 namespace cppy3 {
 
 std::wstring UTF8ToWide(const std::string& text) {
-#ifdef USE_BOOST_CONVERT
+#ifdef CPPY3_USE_BOOST_CONVERT
     using boost::locale::conv::utf_to_utf;
     return utf_to_utf<wchar_t>(text.c_str(), text.c_str() + text.size());
 #else
@@ -14,7 +14,7 @@ std::wstring UTF8ToWide(const std::string& text) {
 }
 
 std::string WideToUTF8(const std::wstring& text) {
-#ifdef USE_BOOST_CONVERT
+#ifdef CPPY3_USE_BOOST_CONVERT
     using boost::locale::conv::utf_to_utf;
     return utf_to_utf<char>(text.c_str(), text.c_str() + text.size());
 #else

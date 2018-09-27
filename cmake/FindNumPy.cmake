@@ -51,7 +51,7 @@ find_package_handle_standard_args(NumPy REQUIRED_VARS NUMPY_INCLUDE_DIR NUMPY_VE
                                         VERSION_VAR   NUMPY_VERSION)
 
 if(NUMPY_FOUND)
-  message(STATUS "NumPy ver. ${NUMPY_VERSION} found (include: ${NUMPY_INCLUDE_DIR})")
+  message(STATUS "Cmake found NumPy version ${NUMPY_VERSION} (include: ${NUMPY_INCLUDE_DIR})")
 endif()
 
 

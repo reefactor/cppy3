@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.1)
 project(cppy3)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -13,7 +13,7 @@ if(USE_BOOST_CONVERT)
     set(Boost_USE_MULTITHREADED ON)
     find_package(Boost REQUIRED)
     message(STATUS "Using Boost string convert: Enabled")
-    add_definitions(-DUSE_BOOST_CONVERT)
+    add_definitions(-DCPPY3_USE_BOOST_CONVERT)
 endif()
 
 # find Python 3.x
@@ -25,8 +25,10 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 
 # find numpy 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-find_package(NumPy REQUIRED)
-include_directories(${NUMPY_INCLUDE_DIR})
+find_package(NumPy)
+if(NUMPY_FOUND)
+    add_definitions(-DCPPY3_BUILT_WITH_NUMPY)
+endif()
 
 # make lib
 add_subdirectory(cppy3)

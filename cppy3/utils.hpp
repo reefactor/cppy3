@@ -3,7 +3,7 @@
 #include <string>
 #include <locale>
 
-#ifdef USE_BOOST_CONVERT
+#ifdef CPPY3_USE_BOOST_CONVERT
     #include <boost/locale/encoding_utf.hpp>
 #else
     #include <codecvt>

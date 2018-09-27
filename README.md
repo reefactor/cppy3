@@ -18,17 +18,22 @@ No additional dependencies. Linux, Windows platforms supported.
 
 ### Dependencies
 
-* C++14 compatible compiler (Clang 3.4+, GCC 4.9+, MSVC 19.0+ (Visual Studio 2015+), Intel C++ Compiler 17+)
+* C++11 compatible compiler (GCC 5+, MSVC, Intel C++, Clang)
 * CMake (3+, build only)
 * python3-dev package (build only)
 * python3-numpy package (optional, build only)
 
-#### Installing dependencies
+#### Installing build dependencies
 
 ##### Debian / Ubuntu
 
 ```bash
-sudo apt-get install g++ python3-dev
+sudo apt-get install cmake g++ python3-dev
+```
+
+Numpy is very much desired for its linear algebra but optional
+```bash
+sudo apt-get install python3-numpy
 ```
 
 ##### Windows
@@ -52,7 +57,7 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
 ```
 
-### Build & run example interactive python console
+### Example interactive python console
 
 ```bash
 cd build && cmake .. && make && ./console

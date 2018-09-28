@@ -28,6 +28,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 find_package(NumPy)
 if(NUMPY_FOUND)
     add_definitions(-DCPPY3_BUILT_WITH_NUMPY)
+else()
+    message(WARNING "Build cppy3 without numpy.ndarray support because NumPy is not found in system")
 endif()
 
 # make lib

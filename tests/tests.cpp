@@ -84,14 +84,14 @@ TEST_CASE( "cppy3 public functionality", "main funcs" ) {
     cppy3::exec("print('numpy version {}'.format(numpy.version.full_version))");
 
     // create numpy ndarray in C
-    double data[2] = {3.14, 42};
+    double cData[2] = {3.14, 42};
     // create copy
-    cppy3::NDArray<double> a(data, 2, 1);
-    // wrap data without copying
+    cppy3::NDArray<double> a(cData, 2, 1);
+    // wrap cData without copying
     cppy3::NDArray<double> b;
-    b.wrap(data, 2, 1);
-    REQUIRE(a(1, 0) == data[1]);
-    REQUIRE(b(1, 0) == data[1]);
+    b.wrap(cData, 2, 1);
+    REQUIRE(a(1, 0) == cData[1]);
+    REQUIRE(b(1, 0) == cData[1]);
 
     // inject into python __main__ namespace
     cppy3::Main().inject("a", a);
@@ -99,11 +99,12 @@ TEST_CASE( "cppy3 public functionality", "main funcs" ) {
     cppy3::exec("print('a: {} {}'.format(type(a), a))");
     cppy3::exec("print('b: {} {}'.format(type(b), b))");
     cppy3::exec("assert type(a) == numpy.ndarray, 'expect injected instance'");
-    cppy3::exec("assert numpy.all(a == b), 'expect data'");
+    cppy3::exec("assert numpy.all(a == b), 'expect cData'");
 
-    // modify b from python
+    // modify b from python (b is a shared ndarray over cData)
     cppy3::exec("b[0] = 100500");
     REQUIRE(b(0, 0) == 100500);
+    REQUIRE(cData[0] == 100500);
   }
 #endif
 

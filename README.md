@@ -5,22 +5,26 @@
 #### Minimalistic library for embedding [CPython](https://github.com/python/cpython) 3.x scripting language into C++ application
 
 Lightweight simple and clean alternative to heavy [boost.python](https://github.com/boostorg/python).
-No additional dependencies. Crossplatform -- Linux, Windows platforms supported.
+No additional dependencies. Crossplatform -- Linux, Windows platforms are supported.
 
 cppy3 is sutable for [embedding Python in C++ application](https://docs.python.org/3/extending/index.html) while boost.python is evolved around [extending Python with C++ module](https://docs.python.org/3/extending/index.html) and [it's embedding capabilities are somehow limited for now](https://www.boost.org/doc/libs/1_63_0/libs/python/doc/html/tutorial/tutorial/embedding.html).
 
 
 ### Features
 
-* Inject variables from C++ code into Python namespace
-* Use reference-counted smart pointer for PyObject*
-* Manage init/shutdown of interpreter in 1 line of code
+* Inject variables from C++ code into Python
+* Extract variables from Python to C++ layer
+* Reference-counted smart pointer wrapper for PyObject*
+* Manage Python init/shutdown with 1 line of code
 * Manage GIL with scoped lock/unlock guards
-* Translate/forward exceptions from Python to to C++ layer
+* Forward exceptions (throw in Python, catch in C++ layer)
 * Nice C++ abstractions for Python native types list, dict and numpy.ndarray
 * Support Numpy ndarray via tiny C++ wrappers
+* Example [interactive python console](examples/console.cpp) in 10 lines of code
 
-#### Inject/extract variables C++ -> Python -> C++
+#### Features examples code snippets from [tests.cpp](tests/tests.cpp)
+
+##### Inject/extract variables C++ -> Python -> C++
 
 ```c++
 // create interpreter
@@ -36,10 +40,11 @@ cppy3::exec("print('sum is', a + b)");
 const cppy3::Var sum = cppy3::eval("a + b");
 assert(sum.type() == cppy3::Var::LONG);
 assert(sum.toLong() == 4);
-assert(sum.toString() == L"4)";
+assert(sum.toString() == L"4");
 ```
 
-#### Forward exceptions Python -> C++
+
+##### Forward exceptions Python -> C++
 
 
 ```c++
@@ -63,7 +68,7 @@ try {
 }
 ```
 
-#### Support numpy ndarray support
+#### Support numpy ndarray
 
 
 ```c++
@@ -104,7 +109,8 @@ assert(cData[0] == 100500);
 * python3-dev package (build only)
 * python3-numpy package (optional, build only)
 
-#### Installing build dependencies
+
+#### Build dependencies
 
 ##### Debian / Ubuntu
 
@@ -138,7 +144,7 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
 ```
 
-### Example interactive python console
+#### Build example interactive python console
 
 ```bash
 cd cppy3 && mkdir build && cd build

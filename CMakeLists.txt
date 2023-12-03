@@ -6,7 +6,6 @@ option(USE_BOOST_CONVERT "use Boost.Locale instead of std::codecvt for string co
 
 set(CMAKE_CXX_FLAGS "-std=c++11 -fPIC -g")
 
-
 # find Boost if necessary
 if(USE_BOOST_CONVERT)
     set(Boost_USE_STATIC_LIBS ON)

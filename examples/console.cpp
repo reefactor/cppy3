@@ -1,24 +1,29 @@
-#include "cppy3/cppy3.hpp"
 #include <iostream>
+#include "cppy3/cppy3.hpp"
 
-int main(int argc, char *argv[]) {
-
-    // create interpreter
+int main(int argc, char *argv[])
+{
     cppy3::PythonVM instance;
 
-    std::cout << "Hey, type in command line, e.g. print(2+2*2)" << std::endl << std::endl;
+    std::cout << "Hey, type in command line, e.g. print(2+2*2)" << std::endl
+              << std::endl;
+ 
     size_t i = 0;
-    for (std::string line; std::getline(std::cin, line); i++) {
-        try {
+    for (std::string line; std::getline(std::cin, line); i++)
+    {
+        try
+        {
 
             const cppy3::Var result = cppy3::eval(line.c_str());
-            std::cout << std::endl << "Out[#" << i << " " << result.typeName()<< "] " << result.toUTF8String() << std::endl;
-
-        } catch (const cppy3::PythonException& e) {
+            std::cout << std::endl
+                      << "Out[#" << i << " " << result.typeName() << "] " << result.toUTF8String() << std::endl;
+        }
+        catch (const cppy3::PythonException &e)
+        {
 
             std::cerr << e.what() << std::endl;
-
         }
     }
+
     return 0;
 }

@@ -17,9 +17,8 @@
  #define DWLOG(MSG) {}
 #endif
 
-namespace cppy3 {
-
-std::wstring UTF8ToWide(const std::string& text);
-std::string WideToUTF8(const std::wstring& text);
-
+namespace cppy3 
+{
+    std::wstring UTF8ToWide(const std::string& text);
+    std::string WideToUTF8(const std::wstring& text);
 }

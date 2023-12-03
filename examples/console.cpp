@@ -3,11 +3,6 @@
 
 static PyObject* hello(PyObject *self, PyObject *args, PyObject *keywds)
 {
-    /*
-    printf("%s", "hello world\n");
-    return Py_BuildValue("s", "Pls Work");
-    */
-    
     const char *name = "";    
     static char *kwlist[] = {"name", NULL};
 

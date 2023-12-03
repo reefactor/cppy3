@@ -12,7 +12,7 @@
 namespace cppy3
 {
 
-  PythonVM::PythonVM(const std::string &programName)
+  PythonVM::PythonVM()
   {
 
     setenv("PYTHONDONTWRITEBYTECODE", "1", 0);
@@ -22,7 +22,25 @@ namespace cppy3
     setenv("PYTHONIOENCODING", "UTF-8");
 #endif
 
-    Py_SetProgramName(const_cast<wchar_t *>(UTF8ToWide(programName).c_str()));
+    // create CPython instance without registering signal handlers
+    Py_InitializeEx(0);
+
+    // initialize GIL
+    PyEval_InitThreads();
+  }
+  
+  PythonVM::PythonVM(const std::string &name, ModuleInitializer module)
+  {
+
+    setenv("PYTHONDONTWRITEBYTECODE", "1", 0);
+
+#ifdef _WIN32
+    // force utf-8 on windows
+    setenv("PYTHONIOENCODING", "UTF-8");
+#endif
+
+    // register the module
+    PyImport_AppendInittab(name.c_str(), module);
 
     // create CPython instance without registering signal handlers
     Py_InitializeEx(0);

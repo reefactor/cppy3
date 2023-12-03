@@ -99,7 +99,10 @@ namespace cppy3
   class PythonVM
   {
   public:
-    PythonVM(const std::string &programName = "");
+    typedef PyObject*(*ModuleInitializer)();
+  
+    PythonVM();
+    PythonVM(const std::string &name, ModuleInitializer module);
     ~PythonVM();
   };
 

@@ -1,8 +1,6 @@
 add_library(cppy3 cppy3.cpp utils.cpp)
 target_link_libraries(cppy3 ${PYTHON_LIBRARY})
 
-#list(APPEND SOURCES src.cpp src2.cpp)
-
 if(NUMPY_FOUND)
     include_directories(${NUMPY_INCLUDE_DIR})
     target_sources(cppy3 PRIVATE "${CMAKE_CURRENT_LIST_DIR}/cppy3_numpy.cpp")

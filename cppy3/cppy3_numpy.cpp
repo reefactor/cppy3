@@ -8,7 +8,8 @@
 namespace cppy3
 {
   // workaround numpy & python3 https://github.com/boostorg/python/issues/214
-  static void *wrap_import_array() { import_array(); }
+  // return NULL to avoid UB https://wanzenbug.xyz/boost-numpy/
+  static void *wrap_import_array() { import_array(); return NULL; }
 
   void importNumpy()
   {

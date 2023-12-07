@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12)
 project(cppy3)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -15,28 +15,30 @@ if(USE_BOOST_CONVERT)
     add_definitions(-DCPPY3_USE_BOOST_CONVERT)
 endif()
 
-# find Python 3.x
-set(REQUIRED_PYTHON_VERSION "3.5")
-message(STATUS "Recomended python version is ${REQUIRED_PYTHON_VERSION}")
-find_package(PythonInterp ${REQUIRED_PYTHON_VERSION} REQUIRED)
-find_package(PythonLibs ${PYTHON_VERSION_STRING} REQUIRED)
-include_directories(${PYTHON_INCLUDE_DIRS})
+find_package (Python3 3.5 REQUIRED COMPONENTS Interpreter Development NumPy)
 
-# find numpy 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-find_package(NumPy)
-if(NUMPY_FOUND)
+message(STATUS "Found Python: ${Python3_FOUND} ${Python3_INTERPRETER_ID} ${Python3_EXECUTABLE}")
+message(STATUS "Found Python3_LIBRARIES: ${Python3_LIBRARIES}")
+message(STATUS "Found Python3_Development_FOUND: ${Python3_Development_FOUND}")
+message(STATUS "Found Python3_NumPy_FOUND: ${Python3_NumPy_FOUND} ${Python3_NumPy_INCLUDE_DIRS}")
+
+if (Python3_Development_FOUND)
+    include_directories(${Python3_INCLUDE_DIRS})
+else()
+    message(FATAL_ERROR "Python dev C headers required (python-dev package)" )
+endif()
+
+if(Python3_NumPy_FOUND)
     add_definitions(-DCPPY3_BUILT_WITH_NUMPY)
 else()
-    message(WARNING "Build cppy3 without numpy.ndarray support because NumPy is not found in system")
+    message(WARNING "Building cppy3 without numpy.ndarray support because NumPy is not found in system")
 endif()
 
 # make lib
 add_subdirectory(cppy3)
 
 # make tests
-add_executable(tests tests/tests.cpp)
-target_link_libraries(tests cppy3)
+add_subdirectory(tests)
 
 # make examples
 add_executable(console examples/console.cpp)

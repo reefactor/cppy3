@@ -50,7 +50,7 @@ namespace cppy3
   LIB_API bool error();
 
   /** Add to sys.path */
-  void appendToSysPath(const std::list<std::wstring> &paths);
+  void appendToSysPath(const std::vector<std::wstring> &paths);
 
   /** Make instance of a class */
   Var createClassInstance(const std::wstring &callable);
@@ -100,7 +100,7 @@ namespace cppy3
   {
   public:
     typedef PyObject*(*ModuleInitializer)();
-  
+
     PythonVM();
     PythonVM(const std::string &name, ModuleInitializer module);
     ~PythonVM();
@@ -220,7 +220,7 @@ namespace cppy3
     }
     else
     {
-      throw PythonException("variable is not a list");
+      throw PythonException(L"variable is not a list");
     }
   }
 
@@ -233,7 +233,7 @@ namespace cppy3
 
     if (!PyList_Check(o))
     {
-      throw PyException("getMatrix(): variable is not a list");
+      throw PythonException(L"getMatrix(): variable is not a list");
     }
 
     if (PyList_Size(o) == 0)

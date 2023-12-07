@@ -21,6 +21,8 @@ cppy3 is sutable for [embedding Python in C++ application](https://docs.python.o
 * Nice C++ abstractions for Python native types list, dict and numpy.ndarray
 * Support Numpy ndarray via tiny C++ wrappers
 * Example [interactive python console](examples/console.cpp) in 10 lines of code
+* Tested on Debian Linux x64 G++ and Mac OSX M1 Clang
+
 
 #### Features examples code snippets from [tests.cpp](tests/tests.cpp)
 
@@ -102,17 +104,24 @@ assert(cData[0] == 100500);
 ```
 
 
-### Dependencies
+### Requirements
 
-* C++11 compatible compiler (GCC 5+, MSVC, Intel C++, Clang)
-* CMake (3+, build only)
-* python3-dev package (build only)
-* python3-numpy package (optional, build only)
+* C++11 compatible compiler
+* CMake 3.12+
+* python3 dev package (with numpy recommended)
 
 
-#### Build dependencies
+#### Build
 
-##### Debian / Ubuntu
+##### Prerequisites
+###### MacOSX
+
+Brew python package has altogether dev headers and numpy included
+```bash
+sudo brew install cmake python3
+```
+
+###### Linux (Debian)
 
 ```bash
 sudo apt-get install cmake g++ python3-dev
@@ -125,30 +134,34 @@ sudo apt-get install python3-numpy
 
 ##### Windows
 
-TODO
+Cmake, Python with numpy is recommended.
 
 ### Build
 
 #### Testdrive
 
 ```bash
-cd cppy3 && mkdir build && cd build
-cmake .. && make && ./tests
+mkdir build
+cd build && cmake ..
+make
+./tests/tests
+```
+
+#### Example interactive python console
+
+```bash
+mkdir build
+cd build && cmake ..
+make
+./console
 ```
 
 #### Release build
 
 ```bash
-cd cppy3 && mkdir build && cd build
+mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
-```
-
-#### Build example interactive python console
-
-```bash
-cd cppy3 && mkdir build && cd build
-cmake .. && make && ./console
 ```
 
 ### License

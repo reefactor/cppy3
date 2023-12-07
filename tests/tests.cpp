@@ -9,6 +9,8 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
+#define DEBUG_UNICODE_CONVERTERS 1
+
 
 TEST_CASE( "Utils", "" ) {
   SECTION( "unicode converters" ) {
@@ -31,7 +33,7 @@ TEST_CASE( "Utils", "" ) {
 #endif
     std::cout << utf8Str << std::endl;
     std::cout << "Unicode->UTF8:" << cppy3::WideToUTF8(unicodeStr) << std::endl;
-    
+
     std::wcout << unicodeStr << std::endl;
     std::wcout << "UTF8->Unicode:" << cppy3::UTF8ToWide(utf8Str) << std::endl;
 #endif

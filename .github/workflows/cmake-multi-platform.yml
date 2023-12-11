@@ -23,7 +23,7 @@ jobs:
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         build_type: [Release, Debug]
         c_compiler: [gcc, clang, cl]
         include:
@@ -46,6 +46,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: LINUX numpy build depencency
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get -y install python3-dev python3-numpy
+
+    - name: MACOS numpy build depencency
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew update
+        brew install cmake python3
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.

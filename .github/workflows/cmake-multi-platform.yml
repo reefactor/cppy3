@@ -60,8 +60,7 @@ jobs:
     - name: MACOS numpy build depencency
       if: matrix.os == 'macos-latest'
       run: |
-        brew update
-        brew install cmake python3
+        python3 -m pip install numpy
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.

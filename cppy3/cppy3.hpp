@@ -33,7 +33,7 @@ namespace cppy3
   class Var;
   class List;
   class Dict;
-  class PyExceptionData;
+  struct PyExceptionData;
   class PythonException;
   class Main;
 

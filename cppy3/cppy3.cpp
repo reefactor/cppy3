@@ -27,6 +27,7 @@ namespace cppy3
 
     // initialize GIL
     PyEval_InitThreads();
+    PyEval_SaveThread();
   }
   
   PythonVM::PythonVM(const std::string &name, ModuleInitializer module)
@@ -45,8 +46,13 @@ namespace cppy3
     // create CPython instance without registering signal handlers
     Py_InitializeEx(0);
 
+    PyObject* sys_path = PySys_GetObject("path");
+    PyList_Append(sys_path, PyUnicode_FromString("."));
+    PyRun_SimpleString(std::string("import " + name).c_str());
+
     // initialize GIL
     PyEval_InitThreads();
+    PyEval_SaveThread();
   }
 
   PythonVM::~PythonVM()
@@ -383,7 +389,7 @@ namespace cppy3
 
   double Var::toDouble() const
   {
-    long value = 0;
+    double value = 0;
     extract(_o, value);
     return value;
   }

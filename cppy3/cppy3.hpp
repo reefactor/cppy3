@@ -495,7 +495,13 @@ namespace cppy3
     template <typename T>
     void getVar(const std::wstring &varName, T &value) const
     {
-      PyObject *o = PyDict_GetItemString(*this, WideToUTF8(varName).data());
+      getVar(WideToUTF8(varName), value);
+    }
+
+    template <typename T>
+    void getVar(const std::string &varName, T &value) const
+    {
+      PyObject *o = PyDict_GetItemString(*this, varName.data());
       assert(o);
       extract(o, value);
     }

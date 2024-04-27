@@ -43,22 +43,43 @@ TEST_CASE( "Utils", "" ) {
   }
 }
 
-TEST_CASE( "cppy3 public functionality", "main funcs" ) {
+TEST_CASE( "cppy3: Embedding Python into C++ code", "main funcs" ) {
   // create interpreter
   cppy3::PythonVM instance;
 
   SECTION("c++ -> python -> c++ variables injection/extraction") {
-    // inject
+
+    // inject C++ -> python
     cppy3::Main().injectVar<int>("a", 2);
     cppy3::Main().injectVar<int>("b", 2);
     cppy3::exec("assert a + b == 4");
     cppy3::exec("print('sum is', a + b)");
-    // extract
+
+    // extract python -> C++
     const cppy3::Var sum = cppy3::eval("a + b");
     REQUIRE(sum.type() == cppy3::Var::LONG);
     REQUIRE(sum.toLong() == 4);
     REQUIRE(sum.toString() == L"4");
     REQUIRE(!cppy3::error());
+
+    try {
+      // extract casting integer as double is forbidden
+      sum.toDouble();
+      REQUIRE(false);  // unreachable code, expect an exception
+    } catch (const cppy3::PythonException& e) {
+      REQUIRE(e.info.reason == L"variable is not a real type");
+    }
+
+    // python var assign name from c++ -> python
+    cppy3::Main().inject("sum_var", sum);
+    cppy3::exec("assert sum_var == 4");
+
+    // cast to float in python
+    cppy3::eval("sum_var = float(sum_var)");
+    // can extract in c++ as double
+    double sum_var = 0;
+    cppy3::Main().getVar<double>("sum_var", sum_var);
+    REQUIRE(abs(sum_var - 4.0) < 10e-10);
   }
 
   SECTION("python -> c++ exception forwarding") {

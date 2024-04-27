@@ -28,7 +28,7 @@ namespace cppy3
     // initialize GIL
     PyEval_InitThreads();
   }
-  
+
   PythonVM::PythonVM(const std::string &name, ModuleInitializer module)
   {
 
@@ -383,7 +383,7 @@ namespace cppy3
 
   double Var::toDouble() const
   {
-    long value = 0;
+    double value = 0;
     extract(_o, value);
     return value;
   }

@@ -26,6 +26,8 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         build_type: [Release, Debug]
         c_compiler: [gcc, clang, cl]
+        python-version: ["3.10"]
+
         include:
           - os: windows-latest
             c_compiler: cl
@@ -63,6 +65,11 @@ jobs:
       if: matrix.os == 'macos-latest'
       run: |
         python3 -m pip install --user --break-system-packages numpy
+
+    - name: WINDOWS numpy build depencency
+      if: matrix.os == 'windows-latest'
+      run: |
+        python3 -m pip install --user numpy
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.

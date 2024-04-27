@@ -28,7 +28,7 @@ namespace cppy3
     // initialize GIL
     PyEval_InitThreads();
   }
-  
+
   PythonVM::PythonVM(const std::string &name, ModuleInitializer module)
   {
 
@@ -320,7 +320,15 @@ namespace cppy3
         throw PythonException(L"variable has no string representation");
       }
     }
-    value = PyUnicode_AsUnicode(str);
+
+    Py_ssize_t size;
+    wchar_t* wideCharStr = PyUnicode_AsWideCharString(str, &size);
+    if (wideCharStr != NULL) {
+      const std::wstring wstr(wideCharStr, size);
+      value = wstr;
+      PyMem_Free(wideCharStr);
+    }
+
   }
 
   void extract(PyObject *o, double &value)
@@ -383,7 +391,7 @@ namespace cppy3
 
   double Var::toDouble() const
   {
-    long value = 0;
+    double value = 0;
     extract(_o, value);
     return value;
   }

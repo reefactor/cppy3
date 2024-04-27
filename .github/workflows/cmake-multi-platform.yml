@@ -69,7 +69,7 @@ jobs:
     - name: WINDOWS numpy build depencency
       if: matrix.os == 'windows-latest'
       run: |
-        python3 -m pip install --user numpy
+        python3 -m pip install numpy
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.

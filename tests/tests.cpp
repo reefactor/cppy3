@@ -80,6 +80,19 @@ TEST_CASE( "cppy3: Embedding Python into C++ code", "main funcs" ) {
     double sum_var = 0;
     cppy3::Main().getVar<double>("sum_var", sum_var);
     REQUIRE(abs(sum_var - 4.0) < 10e-10);
+
+    // unicode strings inject / extract via exec / eval
+    const std::wstring unicodeStr = L"юникод smile ☺";
+    cppy3::exec(L"uu = '" + unicodeStr + L"'");
+    const cppy3::Var uVar = cppy3::eval("uu");
+    REQUIRE(uVar.toString() == unicodeStr);
+
+    // unicode string inject / extract via converters
+    cppy3::Main().injectVar<std::wstring>("uVar2", unicodeStr);
+    cppy3::exec("print('uVar2:', uVar2)");
+    std::wstring uVar2;
+    cppy3::Main().getVar<std::wstring>("uVar2", uVar2);
+    REQUIRE(uVar2 == unicodeStr);
   }
 
   SECTION("python -> c++ exception forwarding") {

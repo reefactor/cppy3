@@ -320,7 +320,15 @@ namespace cppy3
         throw PythonException(L"variable has no string representation");
       }
     }
-    value = PyUnicode_AsUnicode(str);
+
+    Py_ssize_t size;
+    wchar_t* wideCharStr = PyUnicode_AsWideCharString(str, &size);
+    if (wideCharStr != NULL) {
+      const std::wstring wstr(wideCharStr, size);
+      value = wstr;
+      PyMem_Free(wideCharStr);
+    }
+
   }
 
   void extract(PyObject *o, double &value)

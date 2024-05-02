@@ -105,16 +105,16 @@ assert(cData[0] == 100500);
 
 #### Scoped GIL Lock / Release management
 ```c++
-    // initially Python GIL is locked
-    assert(cppy3::GILLocker::isLocked());
+// initially Python GIL is locked
+assert(cppy3::GILLocker::isLocked());
 
-    // add variable
-    cppy3::exec("a = []");
-    cppy3::List a = cppy3::List(cppy3::lookupObject(cppy3::getMainModule(), L"a"));
-    assert(a.size() == 0);
+// add variable
+cppy3::exec("a = []");
+cppy3::List a = cppy3::List(cppy3::lookupObject(cppy3::getMainModule(), L"a"));
+assert(a.size() == 0);
 
-    // create thread that changes the variable a in a different thread
-    const std::string threadScript = R"(
+// create thread that changes the variable a in a different thread
+const std::string threadScript = R"(
 import threading
 def thread_main():
   global a
@@ -123,31 +123,30 @@ def thread_main():
 t = threading.Thread(target=thread_main, daemon=True)
 t.start()
 )";
-    std::cout << threadScript << std::endl;
-    cppy3::exec(threadScript);
+std::cout << threadScript << std::endl;
+cppy3::exec(threadScript);
 
-    {
-      // release GIL on this thread
-      cppy3::ScopedGILRelease gilRelease;
-      assert(!cppy3::GILLocker::isLocked());
-      // and wait thread changes the variable
-      sleep(0.1F);
-      {
-        // lock GIL again before accessing python objects
-        cppy3::GILLocker locker;
-        assert(cppy3::GILLocker::isLocked());
+{
+  // release GIL on this thread
+  cppy3::ScopedGILRelease gilRelease;
+  assert(!cppy3::GILLocker::isLocked());
+  // and wait thread changes the variable
+  sleep(0.1F);
+  {
+    // lock GIL again before accessing python objects
+    cppy3::GILLocker locker;
+    assert(cppy3::GILLocker::isLocked());
 
-        // ensure that variable has been changed
-        cppy3::exec("assert a == [42], a");
-        assert(a.size() == 1);
-        assert((a[0]).toLong() == 42);
-      }
-
-      // GIL is released again
-      assert(!cppy3::GILLocker::isLocked());
-    }
+    // ensure that variable has been changed
+    cppy3::exec("assert a == [42], a");
+    assert(a.size() == 1);
+    assert((a[0]).toLong() == 42);
   }
 
+  // GIL is released again
+  assert(!cppy3::GILLocker::isLocked());
+}
+```
 
 ### Requirements
 

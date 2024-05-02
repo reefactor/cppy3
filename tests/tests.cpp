@@ -144,4 +144,50 @@ TEST_CASE( "cppy3: Embedding Python into C++ code", "main funcs" ) {
   }
 #endif
 
+
+  SECTION("test Scoped GIL Lock / Release") {
+
+    // initially Python GIL is locked
+    REQUIRE(cppy3::GILLocker::isLocked());
+
+    // add variable
+    cppy3::exec("a = []");
+    cppy3::List a = cppy3::List(cppy3::lookupObject(cppy3::getMainModule(), L"a"));
+    REQUIRE(a.size() == 0);
+
+    // create thread that changes the variable a in a different thread
+    const std::string threadScript = R"(
+import threading
+def thread_main():
+  global a
+  a.append(42)
+
+t = threading.Thread(target=thread_main, daemon=True)
+t.start()
+)";
+    std::cout << threadScript << std::endl;
+    cppy3::exec(threadScript);
+
+    {
+      // release GIL on this thread
+      cppy3::ScopedGILRelease gilRelease;
+      REQUIRE(!cppy3::GILLocker::isLocked());
+      // and wait thread changes the variable
+      sleep(0.1F);
+      {
+        // lock GIL again before accessing python objects
+        cppy3::GILLocker locker;
+        REQUIRE(cppy3::GILLocker::isLocked());
+
+        // ensure that variable has been changed
+        cppy3::exec("assert a == [42], a");
+        REQUIRE(a.size() == 1);
+        REQUIRE((a[0]).toLong() == 42);
+      }
+
+      // GIL is released again
+      REQUIRE(!cppy3::GILLocker::isLocked());
+    }
+  }
+
 }

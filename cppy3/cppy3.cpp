@@ -570,6 +570,11 @@ namespace cppy3
     }
   }
 
+  bool GILLocker::isLocked() {
+    return PyGILState_Check() == 1;
+  }
+
+
   PyObject *getMainModule()
   {
     PyObject *mainModule = PyImport_AddModule("__main__");

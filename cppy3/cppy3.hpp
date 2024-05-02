@@ -707,6 +707,9 @@ namespace cppy3
     GILLocker();
     ~GILLocker();
 
+    /** Check if the current thread is holding the GIL */
+    static bool isLocked();
+
   private:
     void lock();
     void release();

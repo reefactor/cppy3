@@ -33,7 +33,7 @@ namespace cppy3
   class Var;
   class List;
   class Dict;
-  class PyExceptionData;
+  struct PyExceptionData;
   class PythonException;
   class Main;
 
@@ -706,6 +706,9 @@ namespace cppy3
   public:
     GILLocker();
     ~GILLocker();
+
+    /** Check if the current thread is holding the GIL */
+    static bool isLocked();
 
   private:
     void lock();

@@ -1,11 +1,16 @@
 add_library(cppy3 cppy3.cpp utils.cpp)
 target_link_libraries(cppy3 ${Python3_LIBRARIES})
 set_property(TARGET cppy3 PROPERTY POSITION_INDEPENDENT_CODE ON)
+target_compile_definitions(cppy3 PRIVATE "cppy3_EXPORTS")
 
 if(Python3_NumPy_FOUND)
     include_directories(${Python3_NumPy_INCLUDE_DIRS})
     target_sources(cppy3 PRIVATE "${CMAKE_CURRENT_LIST_DIR}/cppy3_numpy.cpp")
-    set(NUMPY_LIB "${Python3_NumPy_INCLUDE_DIRS}/../lib/libnpymath.a")
+    if(WIN32)
+        set(NUMPY_LIB "${Python3_NumPy_INCLUDE_DIRS}/../lib/npymath.lib")
+    else()
+        set(NUMPY_LIB "${Python3_NumPy_INCLUDE_DIRS}/../lib/libnpymath.a")
+    endif()
     target_link_libraries(cppy3 ${NUMPY_LIB})
 endif()
 

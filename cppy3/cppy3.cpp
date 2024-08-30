@@ -162,7 +162,7 @@ namespace cppy3
 
   Var execScriptFile(const std::wstring &path)
   {
-    std::ifstream t("file.txt");
+    std::ifstream t(path);
 
     if (!t.is_open())
     {

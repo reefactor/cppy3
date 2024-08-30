@@ -160,13 +160,13 @@ namespace cppy3
     return exec(WideToUTF8(script).c_str());
   }
 
-  Var execScriptFile(const std::wstring &path)
+  Var execScriptFile(const std::string &path)
   {
     std::ifstream t(path);
 
     if (!t.is_open())
     {
-      throw PythonException(L"canot open file " + path);
+      throw PythonException(L"cannot open file " + UTF8ToWide(path));
     }
 
     std::string script((std::istreambuf_iterator<char>(t)),

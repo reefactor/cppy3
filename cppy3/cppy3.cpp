@@ -24,9 +24,6 @@ namespace cppy3
 
     // create CPython instance without registering signal handlers
     Py_InitializeEx(0);
-
-    // initialize GIL
-    PyEval_InitThreads();
   }
 
   PythonVM::PythonVM(const std::string &name, ModuleInitializer module)
@@ -44,9 +41,6 @@ namespace cppy3
 
     // create CPython instance without registering signal handlers
     Py_InitializeEx(0);
-
-    // initialize GIL
-    PyEval_InitThreads();
   }
 
   PythonVM::~PythonVM()
@@ -61,13 +55,17 @@ namespace cppy3
   void setArgv(const std::list<std::wstring> &argv)
   {
     GILLocker lock;
+    PyConfig *config = NULL;
+    PyConfig_InitPythonConfig(config);
 
     std::vector<const wchar_t *> cargv;
     for (std::list<std::wstring>::const_iterator it = argv.begin(); it != argv.end(); ++it)
     {
       cargv.push_back(it->data());
     }
-    PySys_SetArgvEx(argv.size(), (wchar_t **)(&cargv[0]), 0);
+    PyConfig_SetArgv(config, argv.size(), (wchar_t **)(&cargv[0]));
+    PyConfig_Read(config);
+    // PySys_SetArgvEx(argv.size(), (wchar_t **)(&cargv[0]), 0);
   }
 
   Var createClassInstance(const std::wstring &callable)

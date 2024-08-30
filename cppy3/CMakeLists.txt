@@ -1,5 +1,6 @@
 add_library(cppy3 cppy3.cpp utils.cpp)
 target_link_libraries(cppy3 ${Python3_LIBRARIES})
+set_property(TARGET cppy3 PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 if(Python3_NumPy_FOUND)
     include_directories(${Python3_NumPy_INCLUDE_DIRS})

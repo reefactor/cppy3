@@ -1,5 +1,6 @@
 #include <iostream>
 #include <clocale>
+#include <thread>
 
 #include <cppy3/cppy3.hpp>
 #if CPPY3_BUILT_WITH_NUMPY
@@ -173,7 +174,7 @@ t.start()
       cppy3::ScopedGILRelease gilRelease;
       REQUIRE(!cppy3::GILLocker::isLocked());
       // and wait thread changes the variable
-      sleep(0.1F);
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
       {
         // lock GIL again before accessing python objects
         cppy3::GILLocker locker;

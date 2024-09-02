@@ -527,7 +527,7 @@ namespace cppy3
 
     PyObject *result = NULL;
     Var argsTuple;
-    const int argsCount = args.size();
+    const size_t argsCount = args.size();
     if (argsCount > 0)
     {
       argsTuple.newRef(PyTuple_New(argsCount));

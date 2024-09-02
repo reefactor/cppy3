@@ -2,6 +2,9 @@
 #if __cplusplus >= 201703L
 #include <cstdlib>
 #include <cstring>
+#ifdef _WIN32
+#include <wchar.h>
+#endif
 #endif
 
 namespace cppy3
@@ -17,7 +20,7 @@ namespace cppy3
         std::size_t len = std::strlen(narrow) * 2;
         wchar_t *wide = (wchar_t *)malloc(sizeof(wchar_t) * (len + 1));
 #ifdef _WIN32
-        std::mbstowcs_s(&len, wide, len, narrow, len);
+        mbstowcs_s(&len, wide, len, narrow, len);
 #else
         std::mbsrtowcs(wide, &narrow, len, &state);
 #endif
@@ -40,7 +43,7 @@ namespace cppy3
         std::size_t len = text.size() * 2;
         char *narrow = (char *)malloc(sizeof(char) * (len + 1));
 #ifdef _WIN32
-        std::wcstombs_s(&len, narrow, len, wide, len);
+        wcstombs_s(&len, narrow, len, wide, len);
 #else
         std::wcstombs(narrow, wide, len);
 #endif

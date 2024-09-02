@@ -16,7 +16,11 @@ namespace cppy3
         const char *narrow = text.c_str();
         std::size_t len = std::strlen(narrow) * 2;
         wchar_t *wide = (wchar_t *)malloc(sizeof(wchar_t) * (len + 1));
+#ifdef _WIN32
+        std::mbstowcs_s(&len, wide, len, narrow, len);
+#else
         std::mbsrtowcs(wide, &narrow, len, &state);
+#endif
         std::wstring result(wide);
         free(wide);
         return result;
@@ -35,7 +39,11 @@ namespace cppy3
         const wchar_t *wide = text.c_str();
         std::size_t len = text.size() * 2;
         char *narrow = (char *)malloc(sizeof(char) * (len + 1));
+#ifdef _WIN32
+        std::wcstombs_s(&len, narrow, len, wide, len);
+#else
         std::wcstombs(narrow, wide, len);
+#endif
         std::string result(narrow);
         free(narrow);
         return result;

@@ -2,6 +2,14 @@ add_executable(tests tests.cpp)
 target_link_libraries(tests cppy3)
 include_directories(${PROJECT_SOURCE_DIR})
 
+option(CPPY3_TEST_UNICODE_CONVERTERS "Test for proper working of Unicode conversion utilities" ON)
+
+if(CPPY3_TEST_UNICODE_CONVERTERS)
+    add_definitions(-DTEST_UNICODE_CONVERTERS)
+else()
+    add_definitions(-DTEST_UNICODE_CONVERTERS=0)
+endif()
+
 if(Python3_NumPy_FOUND)
     include_directories(${Python3_NumPy_INCLUDE_DIRS})
     if(WIN32)

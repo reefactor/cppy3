@@ -105,6 +105,7 @@ jobs:
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
+      shell: bash
       run: |
         if [[ "$RUNNER_OS" == "Windows" ]]; then
           tests/tests.exe

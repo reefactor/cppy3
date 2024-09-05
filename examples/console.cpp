@@ -4,7 +4,7 @@
 static PyObject* hello(PyObject *self, PyObject *args, PyObject *keywds)
 {
     const char *name = "";    
-    static char *kwlist[] = {"name", NULL};
+    static char *kwlist[] = {(char*)"name", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "s", kwlist, &name))
         return NULL;

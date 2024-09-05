@@ -44,7 +44,7 @@ namespace cppy3
   LIB_API Var eval(const char *pythonScript);
 
   /** exec python script file */
-  LIB_API Var execScriptFile(const std::wstring &path);
+  LIB_API Var execScriptFile(const std::string &path);
 
   /** @return true if python exception occured */
   LIB_API bool error();

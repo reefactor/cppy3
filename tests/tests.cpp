@@ -1,5 +1,6 @@
 #include <iostream>
 #include <clocale>
+#include <thread>
 
 #include <cppy3/cppy3.hpp>
 #if CPPY3_BUILT_WITH_NUMPY
@@ -9,15 +10,17 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#define DEBUG_UNICODE_CONVERTERS 1
+#ifndef TEST_UNICODE_CONVERTERS
+#define TEST_UNICODE_CONVERTERS 1
+#endif
 
 
 TEST_CASE( "Utils", "" ) {
+#if TEST_UNICODE_CONVERTERS
   SECTION( "unicode converters" ) {
     const std::string utf8Str("зачем вы посетили нас в глуши забытого селенья");
     const std::wstring unicodeStr(L"зачем вы посетили нас в глуши забытого селенья");
 
-#if DEBUG_UNICODE_CONVERTERS
 #if 1
     constexpr char locale_name[] = "en_US.UTF-8";
     setlocale( LC_ALL, locale_name );
@@ -36,11 +39,11 @@ TEST_CASE( "Utils", "" ) {
 
     std::wcout << unicodeStr << std::endl;
     std::wcout << "UTF8->Unicode:" << cppy3::UTF8ToWide(utf8Str) << std::endl;
-#endif
 
     REQUIRE(cppy3::WideToUTF8(unicodeStr) == utf8Str);
     REQUIRE(cppy3::UTF8ToWide(utf8Str) == unicodeStr);
   }
+#endif
 }
 
 TEST_CASE( "cppy3: Embedding Python into C++ code", "main funcs" ) {
@@ -173,7 +176,7 @@ t.start()
       cppy3::ScopedGILRelease gilRelease;
       REQUIRE(!cppy3::GILLocker::isLocked());
       // and wait thread changes the variable
-      sleep(0.1F);
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
       {
         // lock GIL again before accessing python objects
         cppy3::GILLocker locker;

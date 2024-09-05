@@ -9,6 +9,19 @@
 
 #include "utils.hpp"
 
+#ifdef _WIN32
+int setenv(const char *name, const char *value, int overwrite)
+{
+    int errcode = 0;
+    if(!overwrite) {
+        size_t envsize = 0;
+        errcode = getenv_s(&envsize, NULL, 0, name);
+        if(errcode || envsize) return errcode;
+    }
+    return _putenv_s(name, value);
+}
+#endif
+
 namespace cppy3
 {
 
@@ -19,14 +32,11 @@ namespace cppy3
 
 #ifdef _WIN32
     // force utf-8 on windows
-    setenv("PYTHONIOENCODING", "UTF-8");
+    setenv("PYTHONIOENCODING", "UTF-8", 0);
 #endif
 
     // create CPython instance without registering signal handlers
     Py_InitializeEx(0);
-
-    // initialize GIL
-    PyEval_InitThreads();
   }
 
   PythonVM::PythonVM(const std::string &name, ModuleInitializer module)
@@ -36,7 +46,7 @@ namespace cppy3
 
 #ifdef _WIN32
     // force utf-8 on windows
-    setenv("PYTHONIOENCODING", "UTF-8");
+    setenv("PYTHONIOENCODING", "UTF-8", 0);
 #endif
 
     // register the module
@@ -44,9 +54,6 @@ namespace cppy3
 
     // create CPython instance without registering signal handlers
     Py_InitializeEx(0);
-
-    // initialize GIL
-    PyEval_InitThreads();
   }
 
   PythonVM::~PythonVM()
@@ -61,13 +68,17 @@ namespace cppy3
   void setArgv(const std::list<std::wstring> &argv)
   {
     GILLocker lock;
+    PyConfig *config = NULL;
+    PyConfig_InitPythonConfig(config);
 
     std::vector<const wchar_t *> cargv;
     for (std::list<std::wstring>::const_iterator it = argv.begin(); it != argv.end(); ++it)
     {
       cargv.push_back(it->data());
     }
-    PySys_SetArgvEx(argv.size(), (wchar_t **)(&cargv[0]), 0);
+    PyConfig_SetArgv(config, argv.size(), (wchar_t **)(&cargv[0]));
+    PyConfig_Read(config);
+    // PySys_SetArgvEx(argv.size(), (wchar_t **)(&cargv[0]), 0);
   }
 
   Var createClassInstance(const std::wstring &callable)
@@ -108,7 +119,7 @@ namespace cppy3
     PyErr_SetInterrupt();
   }
 
-  Var exec(const char *pythonScript)
+  LIB_API Var exec(const char *pythonScript)
   {
     GILLocker lock;
     PyObject *mainDict = getMainDict();
@@ -147,12 +158,12 @@ namespace cppy3
     return result;
   }
 
-  Var exec(const std::string &pythonScript)
+  LIB_API Var exec(const std::string &pythonScript)
   {
     return exec(pythonScript.data());
   }
 
-  Var exec(const std::wstring &pythonScript)
+  LIB_API Var exec(const std::wstring &pythonScript)
   {
     ScopedGILLock lock;
 
@@ -162,13 +173,13 @@ namespace cppy3
     return exec(WideToUTF8(script).c_str());
   }
 
-  Var execScriptFile(const std::wstring &path)
+  LIB_API Var execScriptFile(const std::string &path)
   {
-    std::ifstream t("file.txt");
+    std::ifstream t(path);
 
     if (!t.is_open())
     {
-      throw PythonException(L"canot open file " + path);
+      throw PythonException(L"cannot open file " + UTF8ToWide(path));
     }
 
     std::string script((std::istreambuf_iterator<char>(t)),
@@ -176,13 +187,13 @@ namespace cppy3
     return exec(script.c_str());
   }
 
-  bool error()
+  LIB_API bool error()
   {
     GILLocker lock;
     return Py_IsInitialized() && PyErr_Occurred();
   }
 
-  void rethrowPythonException()
+  LIB_API void rethrowPythonException()
   {
     if (error())
     {
@@ -207,7 +218,7 @@ namespace cppy3
     return result;
   }
 
-  PyExceptionData getErrorObject(const bool clearError)
+  LIB_API PyExceptionData getErrorObject(const bool clearError)
   {
     GILLocker lock;
     std::wstring exceptionType;
@@ -282,33 +293,33 @@ namespace cppy3
     return PyExceptionData(exceptionType, exceptionMessage, exceptionTrace);
   }
 
-  PyObject *convert(const int &value)
+  LIB_API PyObject *convert(const int &value)
   {
     PyObject *o = PyLong_FromLong(value);
     assert(o);
     return o;
   }
 
-  PyObject *convert(const double &value)
+  LIB_API PyObject *convert(const double &value)
   {
     PyObject *o = PyFloat_FromDouble(value);
     assert(o);
     return o;
   }
 
-  PyObject *convert(const char *value)
+  LIB_API PyObject *convert(const char *value)
   {
     PyObject *o = PyUnicode_FromString(value);
     return o;
   }
 
-  PyObject *convert(const std::wstring &value)
+  LIB_API PyObject *convert(const std::wstring &value)
   {
     PyObject *o = PyUnicode_FromWideChar(value.data(), value.size());
     return o;
   }
 
-  void extract(PyObject *o, std::wstring &value)
+  LIB_API void extract(PyObject *o, std::wstring &value)
   {
     Var str(o);
     if (!PyUnicode_Check(o))
@@ -331,7 +342,7 @@ namespace cppy3
 
   }
 
-  void extract(PyObject *o, double &value)
+  LIB_API void extract(PyObject *o, double &value)
   {
     if (PyFloat_Check(o))
     {
@@ -343,7 +354,7 @@ namespace cppy3
     }
   }
 
-  void extract(PyObject *o, long &value)
+  LIB_API void extract(PyObject *o, long &value)
   {
     if (PyLong_Check(o))
     {
@@ -355,12 +366,12 @@ namespace cppy3
     }
   }
 
-  std::wstring Var::toString() const
+  LIB_API std::wstring Var::toString() const
   {
     return toString(_o);
   }
 
-  std::wstring Var::toString(PyObject *val)
+  LIB_API std::wstring Var::toString(PyObject *val)
   {
     assert(val);
     std::wstringstream result;
@@ -382,21 +393,21 @@ namespace cppy3
     return result.str();
   }
 
-  long Var::toLong() const
+  LIB_API long Var::toLong() const
   {
     long value = 0;
     extract(_o, value);
     return value;
   }
 
-  double Var::toDouble() const
+  LIB_API double Var::toDouble() const
   {
     double value = 0;
     extract(_o, value);
     return value;
   }
 
-  Var::Type Var::type() const
+  LIB_API Var::Type Var::type() const
   {
     if (PyLong_Check(_o))
     {
@@ -442,7 +453,7 @@ namespace cppy3
     }
   }
 
-  Var import(const char *moduleName, PyObject *globals, PyObject *locals)
+  LIB_API Var import(const char *moduleName, PyObject *globals, PyObject *locals)
   {
     Var module;
     module.newRef(PyImport_ImportModuleEx(const_cast<char *>(moduleName), globals, locals, NULL));
@@ -454,7 +465,7 @@ namespace cppy3
     return module;
   }
 
-  Var lookupObject(PyObject *module, const std::wstring &name)
+  LIB_API Var lookupObject(PyObject *module, const std::wstring &name)
   {
     std::wstring temp;
     std::vector<std::wstring> items;
@@ -490,7 +501,7 @@ namespace cppy3
     return p;
   }
 
-  Var lookupCallable(PyObject *module, const std::wstring &name)
+  LIB_API Var lookupCallable(PyObject *module, const std::wstring &name)
   {
     Var p = lookupObject(module, name);
 
@@ -504,7 +515,7 @@ namespace cppy3
     return p;
   }
 
-  PyObject *call(PyObject *callable, const arguments &args)
+  LIB_API PyObject *call(PyObject *callable, const arguments &args)
   {
     assert(callable);
     if (!PyCallable_Check(callable))
@@ -516,7 +527,7 @@ namespace cppy3
 
     PyObject *result = NULL;
     Var argsTuple;
-    const int argsCount = args.size();
+    const size_t argsCount = args.size();
     if (argsCount > 0)
     {
       argsTuple.newRef(PyTuple_New(argsCount));
@@ -534,23 +545,23 @@ namespace cppy3
     return result;
   }
 
-  PyObject *call(const char *callable, const arguments &args)
+  LIB_API PyObject *call(const char *callable, const arguments &args)
   {
     return call(lookupCallable(getMainModule(), UTF8ToWide(callable)), args);
   }
 
-  GILLocker::GILLocker() : _locked(false)
+  LIB_API GILLocker::GILLocker() : _locked(false)
   {
     // autolock GIL in scoped_lock style
     lock();
   }
 
-  GILLocker::~GILLocker()
+  LIB_API GILLocker::~GILLocker()
   {
     release();
   }
 
-  void GILLocker::release()
+  LIB_API void GILLocker::release()
   {
     if (_locked)
     {
@@ -560,7 +571,7 @@ namespace cppy3
     }
   }
 
-  void GILLocker::lock()
+  LIB_API void GILLocker::lock()
   {
     if (!_locked)
     {
@@ -570,19 +581,19 @@ namespace cppy3
     }
   }
 
-  bool GILLocker::isLocked() {
+  LIB_API bool GILLocker::isLocked() {
     return PyGILState_Check() == 1;
   }
 
 
-  PyObject *getMainModule()
+  LIB_API PyObject *getMainModule()
   {
     PyObject *mainModule = PyImport_AddModule("__main__");
     assert(mainModule);
     return mainModule;
   }
 
-  PyObject *getMainDict()
+  LIB_API PyObject *getMainDict()
   {
     PyObject *mainDict = PyModule_GetDict(getMainModule());
     assert(mainDict);

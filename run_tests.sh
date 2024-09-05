@@ -9,7 +9,7 @@ make
 ./tests/tests
 
 echo "TEST RELEASE BUILD"
-cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake -DCMAKE_BUILD_TYPE=Release -DCPPY3_BUILD_EXECUTABLES=On ..
 cmake --build .
 ./tests/tests
 

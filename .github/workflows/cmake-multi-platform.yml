@@ -78,6 +78,15 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
+    - name: Set reusable strings
+      # Find path of numpy includes
+      id: numpy-path
+      shell: bash
+      run: |
+        echo $(python3 -c "import numpy; print('numpy-include=' +  numpy.get_include())") >> "$GITHUB_OUTPUT"
+        echo GITHUB_OUTPUT:
+        echo cat ${GITHUB_OUTPUT}
+
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
@@ -86,6 +95,8 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DCPPY3_BUILD_EXECUTABLES=ON
+        -DPython3_NumPy_INCLUDE_DIR='${{ steps.numpy-path.outputs.numpy-include }}'
         -S ${{ github.workspace }}
 
     - name: Build
@@ -95,9 +106,10 @@ jobs:
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
+      shell: bash
       run: |
         if [[ "$RUNNER_OS" == "Windows" ]]; then
-          tests/tests.exe
+          tests\\${{ matrix.build_type }}\\tests.exe
         else
           tests/tests
         fi

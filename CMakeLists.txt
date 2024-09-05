@@ -2,9 +2,15 @@ cmake_minimum_required(VERSION 3.12)
 project(cppy3)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-option(USE_BOOST_CONVERT "use Boost.Locale instead of std::codecvt for string conversion" OFF)
+option(CPPY3_USE_BOOST_CONVERT "use Boost.Locale instead of std::codecvt for string conversion" OFF)
+option(CPPY3_BUILD_EXECUTABLES "Build cppy3 examples" OFF)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 -fPIC -g")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if(MSVC)
+    add_compile_options(/Zc:__cplusplus)
+endif()
+
 
 # find Boost if necessary
 if(USE_BOOST_CONVERT)
@@ -37,9 +43,10 @@ endif()
 # make lib
 add_subdirectory(cppy3)
 
-# make tests
-add_subdirectory(tests)
-
-# make examples
-add_executable(console examples/console.cpp)
-target_link_libraries(console cppy3)
+if(CPPY3_BUILD_EXECUTABLES)
+    # make tests
+    add_subdirectory(tests)
+    # make examples
+    add_executable(console examples/console.cpp)
+    target_link_libraries(console cppy3)
+endif()

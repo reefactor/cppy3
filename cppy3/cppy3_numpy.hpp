@@ -103,7 +103,7 @@ namespace cppy3
      * @param n2 - cols size
      * @param fillZeros - initialize allocated array with zeros
      */
-    void create(int n1, int n2, bool fillZeros = SLOWER_AND_CLEARNER)
+    void create(size_t n1, size_t n2, bool fillZeros = SLOWER_AND_CLEARNER)
     {
 
       decref();

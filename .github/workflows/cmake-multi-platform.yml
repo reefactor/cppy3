@@ -108,7 +108,7 @@ jobs:
       shell: bash
       run: |
         if [[ "$RUNNER_OS" == "Windows" ]]; then
-          tests\${{ matrix.build_type }}\tests.exe
+          tests/${{ matrix.build_type }}/tests.exe
         else
           tests/tests
         fi

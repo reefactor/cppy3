@@ -84,6 +84,7 @@ jobs:
       shell: bash
       run: |
         echo $(python3 -c "import numpy; print('numpy-include=' +  numpy.get_include())") >> "$GITHUB_OUTPUT"
+        echo GITHUB_OUTPUT:\n ${GITHUB_OUTPUT}
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.

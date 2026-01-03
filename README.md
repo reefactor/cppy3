@@ -150,9 +150,10 @@ cppy3::exec(threadScript);
 
 ### Requirements
 
-* C++11 compatible compiler
+* C++11 compatible compiler (tested on GCC, Clang, MSVC)
 * CMake 3.12+
-* python3 dev package (with numpy recommended)
+* python3 3.5 dev package
+* numpy 1.x or 2.x (tested on numpy 1.26.4 and 2.4.0)
 
 
 #### Build
@@ -171,7 +172,7 @@ sudo brew install cmake python3
 sudo apt-get install cmake g++ python3-dev
 ```
 
-Numpy is very much desired but optional
+Numpy is very much desired but optional depending on cmake `CPPY3_LINK_NUMPY` option
 ```bash
 sudo apt-get install python3-numpy
 ```

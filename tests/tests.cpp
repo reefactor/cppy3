@@ -121,6 +121,7 @@ TEST_CASE( "cppy3: Embedding Python into C++ code", "main funcs" ) {
     cppy3::importNumpy();
     cppy3::exec("import numpy");
     cppy3::exec("print('numpy version {}'.format(numpy.version.full_version))");
+    cppy3::exec("print('numpy C API include:', numpy.get_include())");
 
     // create numpy ndarray in C
     double cData[2] = {3.14, 42};
@@ -183,6 +184,7 @@ t.start()
         REQUIRE(cppy3::GILLocker::isLocked());
 
         // ensure that variable has been changed
+        cppy3::exec("print('list a size:', len(a), 'items:', a)");
         cppy3::exec("assert a == [42], a");
         REQUIRE(a.size() == 1);
         REQUIRE((a[0]).toLong() == 42);
